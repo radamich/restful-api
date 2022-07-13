@@ -1,0 +1,33 @@
+{
+    "name": "movisio/restful-api",
+    "description": "Nette REST api basics",
+    "authors": [
+        {
+            "name": "Movisio s.r.o."
+        }
+    ],
+    "type": "library",
+    "replace": {
+        "tprochazka/restful":"*"
+    },
+    "require-dev": {
+        "nette/tester": "^2.4.0",
+        "movisio/nais-cs": "2.*"
+    },
+    "require": {
+        "php": "^8.0"
+    },
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Drahak\\Restful\\": "src/compatibility/",
+            "Movisio\\RestfulApi\\": "src/"
+        }
+    },
+    "config": {
+        "allow-plugins": {
+            "movisio/nais-cs": true,
+            "dealerdirect/phpcodesniffer-composer-installer": true
+        }
+    }
+}
