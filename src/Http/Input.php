@@ -5,34 +5,21 @@ namespace Movisio\RestfulApi\Http;
 
 use ArrayIterator;
 use IteratorAggregate;
-use Movisio\RestfulApi\Validation\IDataProvider;
-use Movisio\RestfulApi\Validation\IField;
-use Movisio\RestfulApi\Validation\IValidationScope;
-use Movisio\RestfulApi\Validation\IValidationScopeFactory;
 
 /**
  * Request Input parser
  * @property array $data
  */
-class Input implements IteratorAggregate, IInput, IDataProvider
+class Input implements IteratorAggregate, IInput
 {
     /** @var array */
     private $data;
-
-    /** @var IValidationScope */
-    private $validationScope;
-
-    /** @var IValidationScopeFactory */
-    private $validationScopeFactory;
-
     /**
-     * @param IValidationScopeFactory $validationScopeFactory
      * @param array $data
      */
-    public function __construct(IValidationScopeFactory $validationScopeFactory, array $data = [])
+    public function __construct(array $data = [])
     {
         $this->data = $data;
-        $this->validationScopeFactory = $validationScopeFactory;
     }
 
     /******************** IInput ********************/
@@ -95,47 +82,5 @@ class Input implements IteratorAggregate, IInput, IDataProvider
     public function getIterator() : ArrayIterator
     {
         return new ArrayIterator($this->getData());
-    }
-
-    /******************** Validation data provider interface ********************/
-
-    /**
-     * Get validation field
-     * @param string $name
-     * @return IField
-     */
-    public function field(string $name) : IField
-    {
-        return $this->getValidationScope()->field($name);
-    }
-
-    /**
-     * Validate input data
-     * @return array
-     */
-    public function validate() : array
-    {
-        return $this->getValidationScope()->validate($this->getData());
-    }
-
-    /**
-     * Is input valid
-     * @return bool
-     */
-    public function isValid() : bool
-    {
-        return !$this->validate();
-    }
-
-    /**
-     * Get validation scope
-     * @return IValidationScope
-     */
-    public function getValidationScope() : IValidationScope
-    {
-        if (!$this->validationScope) {
-            $this->validationScope = $this->validationScopeFactory->create();
-        }
-        return $this->validationScope;
     }
 }

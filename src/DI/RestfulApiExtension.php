@@ -41,7 +41,7 @@ class RestfulApiExtension extends CompilerExtension
      * @param ContainerBuilder $container
      * @param array $config
      */
-    private function loadRestful(ContainerBuilder $container, array $config) : void
+    private function loadRestful(ContainerBuilder $container/*, array $config*/) : void
     {
 
         // Input & validation
@@ -54,9 +54,9 @@ class RestfulApiExtension extends CompilerExtension
         $container->getDefinition('httpRequest')
             ->setFactory($this->prefix('@httpRequestFactory') . '::createHttpRequest');
 
-        $container->addDefinition($this->prefix('requestFilter'))
+        /*$container->addDefinition($this->prefix('requestFilter'))
             ->setFactory(\Drahak\Restful\Utils\RequestFilter::class)
-            ->setArguments(['@httpRequest', [$config['jsonpKey'], $config['prettyPrintKey']]]);
+            ->setArguments(['@httpRequest', [$config['jsonpKey'], $config['prettyPrintKey']]]);*/
     }
 
     /**

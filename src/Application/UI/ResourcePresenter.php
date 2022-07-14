@@ -3,8 +3,11 @@ declare(strict_types = 1);
 
 namespace Movisio\RestfulApi\Application\UI;
 
-use Drahak\Restful\Security\AuthenticationContext;
-use Movisio\RestfulApi\Http\ResponseFactory;
+use Movisio\RestfulApi\Http\IInput;
+use Movisio\RestfulApi\Http\InputFactory;
+use Movisio\RestfulApi\Security\AuthenticationContext;
+use Movisio\RestfulApi\Security\ForbiddenRequestException;
+use Movisio\RestfulApi\Security\SecurityException;
 use Nette\Application\Responses\JsonResponse;
 use Nette\Application\UI\Presenter;
 use Nette\NotImplementedException;
@@ -17,11 +20,14 @@ class ResourcePresenter extends Presenter
     /** @var array */
     protected array $resource = [];
 
-    /** @var ResponseFactory */
-    protected $responseFactory;
+    /** @var InputFactory */
+    protected $inputFactory;
 
     /** @var AuthenticationContext */
     protected $authentication;
+
+    /** @var IInput */
+    private $input;
 
 
     /**
@@ -47,9 +53,9 @@ class ResourcePresenter extends Presenter
     {
         $res = [];
         foreach ($array as $key => $value) {
-            $newKey = preg_replace_callback('/_([a-z])/', static function ($matches) {
+            $newKey = is_string($key) ? preg_replace_callback('/_([a-z])/', static function ($matches) {
                 return strtoupper($matches[1]);
-            }, $key);
+            }, $key) : $key;
             $newVal = is_iterable($value)  ? self::arrayKeysRecursiveConvert($value) : $value;
             $res[$newKey] = $newVal;
         }
@@ -66,17 +72,17 @@ class ResourcePresenter extends Presenter
      * @param RequestFilter|mixed $requestFilter
      */
     final public function injectDrahakRestful(
-        /*IResponseFactory*/ $responseFactory,
-        /*IResourceFactory*/ $resourceFactory,
+        ///*IResponseFactory*/ $responseFactory,
+        ///*IResourceFactory*/ $resourceFactory,
         AuthenticationContext $authentication,
-        /*InputFactory*/ $inputFactory,
-        /*RequestFilter*/ $requestFilter
+        InputFactory $inputFactory,
+        ///*RequestFilter*/ $requestFilter
     ) : void {
-        $this->responseFactory = $responseFactory;
+        //$this->responseFactory = $responseFactory;
         //$this->resourceFactory = $resourceFactory;
         $this->authentication = $authentication;
         //$this->requestFilter = $requestFilter;
-        //$this->inputFactory = $inputFactory;
+        $this->inputFactory = $inputFactory;
     }
 
     /**
@@ -97,5 +103,41 @@ class ResourcePresenter extends Presenter
     {
         parent::beforeRender();
         $this->sendResource();
+    }
+
+    /**
+     * Check security and other presenter requirements
+     * @param mixed $element
+     */
+    public function checkRequirements($element) : void
+    {
+        try {
+            parent::checkRequirements($element);
+        } catch (ForbiddenRequestException $e) {
+            $this->sendErrorResource($e);
+        }
+
+        // Try to authenticate client
+        try {
+            $this->authentication->authenticate($this->getInput());
+        } catch (SecurityException $e) {
+            $this->sendErrorResource($e);
+        }
+    }
+
+    /**
+     * Get input
+     * @return IInput
+     */
+    public function getInput() : IInput
+    {
+        if (!$this->input) {
+            try {
+                $this->input = $this->inputFactory->create();
+            } catch (BadRequestException $e) {
+                $this->sendErrorResource($e);
+            }
+        }
+        return $this->input;
     }
 }

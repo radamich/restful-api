@@ -4,10 +4,6 @@ declare(strict_types = 1);
 namespace Movisio\RestfulApi\Http;
 
 use Movisio\RestfulApi\InvalidStateException;
-use Movisio\RestfulApi\Mapping\IMapper;
-use Movisio\RestfulApi\Mapping\MapperContext;
-use Movisio\RestfulApi\Mapping\MappingException;
-use Movisio\RestfulApi\Validation\IValidationScopeFactory;
 use Movisio\RestfulApi\Application\BadRequestException;
 use Nette\Http\IRequest;
 use Nette;
@@ -20,28 +16,13 @@ class InputFactory
     /** @var IRequest */
     protected $httpRequest;
 
-    /** @var IValidationScopeFactory */
-    private $validationScopeFactory;
-
-    /** @var IMapper */
-    private $mapper;
-
-    /** @var MapperContext */
-    private $mapperContext;
-
     /**
      * @param IRequest $httpRequest
-     * @param MapperContext $mapperContext
-     * @param IValidationScopeFactory $validationScopeFactory
      */
     public function __construct(
-        IRequest $httpRequest,
-        MapperContext $mapperContext,
-        IValidationScopeFactory $validationScopeFactory
+        IRequest $httpRequest
     ) {
         $this->httpRequest = $httpRequest;
-        $this->mapperContext = $mapperContext;
-        $this->validationScopeFactory = $validationScopeFactory;
     }
 
     /**
@@ -50,7 +31,7 @@ class InputFactory
      */
     public function create() : Input
     {
-        $input = new Input($this->validationScopeFactory);
+        $input = new Input();
         $input->setData($this->parseData());
         return $input;
     }
@@ -85,17 +66,26 @@ class InputFactory
 
         if ($input) {
             try {
-                $this->mapper = $this->mapperContext->getMapper($this->httpRequest->getHeader('Content-Type'));
-                $requestBody = $this->mapper->parse($input);
+                $requestBody = static::parseJson($input);
             } catch (InvalidStateException $e) {
                 throw BadRequestException::unsupportedMediaType(
                     'No mapper defined for Content-Type ' . $this->httpRequest->getHeader('Content-Type'),
                     $e
                 );
-            } catch (MappingException $e) {
+            } catch (Nette\Utils\JsonException $e) {
                 throw new BadRequestException($e->getMessage(), 400, $e);
             }
         }
         return $requestBody;
+    }
+
+    /**
+     * Convert client request data to array or traversable
+     * @param string $data
+     * @return array
+     */
+    public function parseJson(string $data) : array
+    {
+            return Nette\Utils\Json::decode($data, Json::FORCE_ARRAY);
     }
 }
