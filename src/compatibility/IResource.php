@@ -17,10 +17,4 @@ interface IResource
     public const FILE = 'application/octet-stream';
     public const FORM = 'multipart/form-data';
     public const NULL = null;
-
-    /**
-     * Get element value or array data
-     * @return array|Traversable
-     */
-    public function getData();
 }

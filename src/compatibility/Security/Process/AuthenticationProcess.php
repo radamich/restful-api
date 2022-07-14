@@ -6,6 +6,6 @@ namespace Drahak\Restful\Security\Process;
 /**
  * Mock for backward compatibility
  */
-class AuthenticationProcess
+abstract class AuthenticationProcess extends \Movisio\RestfulApi\Security\Process\AuthenticationProcess
 {
 }
