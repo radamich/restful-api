@@ -13,7 +13,7 @@ use IteratorAggregate;
 class Input implements IteratorAggregate, IInput
 {
     /** @var array */
-    private $data;
+    private array $data;
     /**
      * @param array $data
      */
@@ -49,10 +49,8 @@ class Input implements IteratorAggregate, IInput
     /**
      * @param string $name
      * @return mixed
-     *
-     * @throws \Exception|\Nette\MemberAccessException
      */
-    public function &__get(string $name)
+    public function &__get(string $name) : mixed
     {
         $data = $this->getData();
         if (array_key_exists($name, $data)) {

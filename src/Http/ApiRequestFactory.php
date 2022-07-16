@@ -18,7 +18,7 @@ class ApiRequestFactory
     /**
      * @var RequestFactory
      */
-    private $factory;
+    private RequestFactory $factory;
 
     /**
      * @param RequestFactory $factory
@@ -34,7 +34,7 @@ class ApiRequestFactory
      */
     public function createHttpRequest() : IRequest
     {
-        $request = $this->factory->createHttpRequest();
+        $request = $this->factory->fromGlobals();
         $url = $request->getUrl();
         $url = $url->withQuery($request->getQuery());
 

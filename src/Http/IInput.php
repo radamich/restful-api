@@ -6,7 +6,7 @@ namespace Movisio\RestfulApi\Http;
 /**
  * REST client request Input interface
  */
-interface IInput extends \Drahak\Restful\Http\IInput // contravariance reasons
+interface IInput extends \Drahak\Restful\Http\IInput // reversed for contravariance reasons
 {
     /**
      * Get parsed input data

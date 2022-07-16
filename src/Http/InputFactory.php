@@ -3,8 +3,7 @@ declare(strict_types = 1);
 
 namespace Movisio\RestfulApi\Http;
 
-use Movisio\RestfulApi\InvalidStateException;
-use Movisio\RestfulApi\Application\BadRequestException;
+use Movisio\RestfulApi\BadRequestException;
 use Nette\Http\IRequest;
 use Nette;
 
@@ -14,14 +13,13 @@ use Nette;
 class InputFactory
 {
     /** @var IRequest */
-    protected $httpRequest;
+    protected IRequest $httpRequest;
 
     /**
      * @param IRequest $httpRequest
      */
-    public function __construct(
-        IRequest $httpRequest
-    ) {
+    public function __construct(IRequest $httpRequest)
+    {
         $this->httpRequest = $httpRequest;
     }
 
@@ -31,16 +29,12 @@ class InputFactory
      */
     public function create() : Input
     {
-        $input = new Input();
-        $input->setData($this->parseData());
-        return $input;
+        return new Input($this->parseData());
     }
 
     /**
      * Parse data for input
      * @return array
-     *
-     * @throws BadRequestException
      */
     protected function parseData() : array
     {
@@ -53,11 +47,9 @@ class InputFactory
 
     /**
      * Parse request body if any
-     * @return array|\Traversable
-     *
-     * @throws BadRequestException
+     * @return array
      */
-    protected function parseRequestBody()
+    protected function parseRequestBody() : array
     {
         $requestBody = [];
         $input = class_exists('Nette\Framework') && Nette\Framework::VERSION_ID <= 20200 ? // Nette 2.2.0 and/or newer
@@ -67,11 +59,6 @@ class InputFactory
         if ($input) {
             try {
                 $requestBody = static::parseJson($input);
-            } catch (InvalidStateException $e) {
-                throw BadRequestException::unsupportedMediaType(
-                    'No mapper defined for Content-Type ' . $this->httpRequest->getHeader('Content-Type'),
-                    $e
-                );
             } catch (Nette\Utils\JsonException $e) {
                 throw new BadRequestException($e->getMessage(), 400, $e);
             }
@@ -80,7 +67,7 @@ class InputFactory
     }
 
     /**
-     * Convert client request data to array or traversable
+     * Convert client request data to array
      * @param string $data
      * @return array
      */

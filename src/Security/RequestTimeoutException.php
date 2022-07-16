@@ -6,6 +6,6 @@ namespace Movisio\RestfulApi\Security;
 /**
  * Exception class
  */
-class RequestTimeoutException extends \Exception
+class RequestTimeoutException extends SecurityException
 {
 }

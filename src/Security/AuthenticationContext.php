@@ -8,12 +8,11 @@ use Movisio\RestfulApi\Security\Process\AuthenticationProcess;
 
 /**
  * AuthenticationContext determines which authentication process should use
- * @property-write AuthenticationProcess $process
  */
 class AuthenticationContext
 {
     /** @var AuthenticationProcess */
-    private $process;
+    private AuthenticationProcess $process;
 
     /**
      * Set authentication process to use
@@ -30,9 +29,6 @@ class AuthenticationContext
      * Authenticate request with authentication process strategy
      * @param IInput $input
      * @return bool
-     *
-     * @throws AuthenticationException
-     * @throws RequestTimeoutException
      */
     public function authenticate(IInput $input) : bool
     {

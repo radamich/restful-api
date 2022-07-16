@@ -11,39 +11,18 @@ use Nette\Http;
  */
 class ErrorResponse implements Response
 {
-    /** @var array|\stdClass|\Traversable */
-    protected $data;
-
     private Response $response;
 
     private int $code;
 
     /**
      * @param Response $response Wrapped response with data
-     * @param int $errorCode
+     * @param int $code
      */
     public function __construct(Response $response, int $code = 500)
     {
         $this->response = $response;
         $this->code = $code;
-    }
-
-    /**
-     * Get response data
-     * @return array|\stdClass|\Traversable
-     */
-    public function getData()
-    {
-        return $this->response->getData();
-    }
-
-    /**
-     * Get response content type
-     * @return string
-     */
-    public function getContentType() : string
-    {
-        return $this->response->contentType;
     }
 
     /**

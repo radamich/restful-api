@@ -6,6 +6,6 @@ namespace Movisio\RestfulApi\Security;
 /**
  * Exception class
  */
-class SecurityException extends AuthenticationException
+class SecurityException extends \Exception
 {
 }

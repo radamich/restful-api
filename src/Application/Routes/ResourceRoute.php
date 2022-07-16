@@ -23,6 +23,11 @@ class ResourceRoute extends Route
     protected int $flags;
 
     /**
+     * Route constructor
+     *
+     * $flags argument has been deprecated in Nette, but we allow it to enable simpler router config files
+     * The router factory should be aware of that and handle it - LazyRouter does for us.
+     *
      * @param string $mask
      * @param array|string $metadata
      * @param int $flags

@@ -25,14 +25,12 @@ abstract class AuthenticationProcess
     /**
      * Authenticate request data
      * @param IInput $input
-     * @return bool|void
      */
-    abstract protected function authRequestData(IInput $input);
+    abstract protected function authRequestData(IInput $input) : void;
 
     /**
      * Authenticate request timeout
      * @param IInput $input
-     * @return bool|void
      */
-    abstract protected function authRequestTimeout(IInput $input);
+    abstract protected function authRequestTimeout(IInput $input) : void;
 }
