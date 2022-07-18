@@ -6,6 +6,7 @@ namespace Movisio\RestfulApi\DI;
 use Movisio\RestfulApi\Application\Converters\CamelCaseConverter;
 use Movisio\RestfulApi\Application\Converters\DateTimeConverter;
 use Movisio\RestfulApi\Application\Converters\ResourceConverter;
+use Movisio\RestfulApi\Utils\RequestFilter;
 use Nette\Configurator;
 use Nette\DI\CompilerExtension;
 use Nette\DI\ContainerBuilder;
@@ -80,9 +81,13 @@ class RestfulApiExtension extends CompilerExtension
         }
 
         $container->addDefinition($this->prefix('dateTimeConverter'))
-            ->setClass(DateTimeConverter::class)
+            ->setFactory(DateTimeConverter::class)
             ->setArguments([$config['timeFormat']])
             ->addTag(self::CONVERTER_TAG);
+
+        $container->addDefinition($this->prefix('requestFilter'))
+            ->setFactory(RequestFilter::class)
+            ->setArguments(['@httpRequest']);
     }
 
     /**

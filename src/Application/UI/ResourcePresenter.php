@@ -9,8 +9,11 @@ use Movisio\RestfulApi\Http\InputFactory;
 use Movisio\RestfulApi\Security\AuthenticationContext;
 use Movisio\RestfulApi\Security\ForbiddenRequestException;
 use Movisio\RestfulApi\Security\SecurityException;
+use Movisio\RestfulApi\Utils\RequestFilter;
 use Nette\Application\Responses\JsonResponse;
 use Nette\Application\UI\Presenter;
+use Nette\Http\IRequest;
+use Nette\Http\IResponse;
 use Nette\NotImplementedException;
 
 /**
@@ -28,18 +31,23 @@ class ResourcePresenter extends Presenter
     protected AuthenticationContext $authentication;
 
     /** @var IInput */
-    private IInput $input;
+    protected IInput $input;
 
-    private ResourceConverter $resourceConverter;
+    /** @var RequestFilter */
+    protected RequestFilter $requestFilter;
 
-    /**
-     * @param ResourceConverter $resourceConverter
-     */
-    public function injectResourceConverter(ResourceConverter $resourceConverter) : void
-    {
-        $this->resourceConverter = $resourceConverter;
-    }
+    /** @var ResourceConverter */
+    protected ResourceConverter $resourceConverter;
 
+    /** @var array Default response code for each request method */
+    protected $defaultCodes = [
+        IRequest::GET => IResponse::S200_OK,
+        IRequest::POST => IResponse::S201_CREATED,
+        IRequest::PUT => IResponse::S200_OK,
+        IRequest::HEAD => IResponse::S200_OK,
+        IRequest::DELETE => IResponse::S200_OK,
+        IRequest::PATCH => IResponse::S200_OK,
+    ];
 
     /**
      * Send resouce as Json response
@@ -52,20 +60,31 @@ class ResourcePresenter extends Presenter
             throw new NotImplementedException("Only JSON API responses are currently allowed");
         }
         $response = new JsonResponse($this->resourceConverter->convertResource($this->resource));
+        $code = $this->getHttpResponse()->getCode();
+        if ($code === IResponse::S200_OK) {
+            $code = $this->defaultCodes[$this->getRequest()->getMethod()] ?? 200;
+        }
+        $this->getHttpResponse()->setCode($code);
         $this->sendResponse($response);
     }
 
     /**
-     * Inject Drahak Restful
+     * Inject Restful services
      * @param AuthenticationContext $authentication
      * @param InputFactory $inputFactory
+     * @param RequestFilter $requestFilter
+     * @param ResourceConverter $resourceConverter
      */
     final public function injectDrahakRestful(
         AuthenticationContext $authentication,
         InputFactory $inputFactory,
+        RequestFilter $requestFilter,
+        ResourceConverter $resourceConverter,
     ) : void {
         $this->authentication = $authentication;
         $this->inputFactory = $inputFactory;
+        $this->resourceConverter = $resourceConverter;
+        $this->requestFilter = $requestFilter;
     }
 
     /**
