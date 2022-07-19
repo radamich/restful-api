@@ -5,12 +5,15 @@ namespace Movisio\RestfulApi\Security;
 
 use Movisio\RestfulApi\Http\IInput;
 use Movisio\RestfulApi\Security\Process\AuthenticationProcess;
+use Nette\SmartObject;
 
 /**
  * AuthenticationContext determines which authentication process should use
  */
 class AuthenticationContext
 {
+    use SmartObject;
+
     /** @var AuthenticationProcess */
     private AuthenticationProcess $process;
 

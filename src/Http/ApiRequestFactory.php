@@ -6,12 +6,15 @@ namespace Movisio\RestfulApi\Http;
 use Nette\Http\RequestFactory;
 use Nette\Http\Request;
 use Nette\Http\IRequest;
+use Nette\SmartObject;
 
 /**
  * Api request factory
  */
 class ApiRequestFactory
 {
+    use SmartObject;
+
     public const OVERRIDE_HEADER = 'X-HTTP-Method-Override';
     public const OVERRIDE_PARAM = '__method';
 

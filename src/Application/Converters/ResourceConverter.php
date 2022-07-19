@@ -3,11 +3,15 @@ declare(strict_types = 1);
 
 namespace Movisio\RestfulApi\Application\Converters;
 
+use Nette\SmartObject;
+
 /**
  * Manager for resource converters
  */
 class ResourceConverter
 {
+    use SmartObject;
+
     private array $converters = [];
 
     /**

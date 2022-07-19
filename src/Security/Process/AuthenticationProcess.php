@@ -4,12 +4,15 @@ declare(strict_types = 1);
 namespace Movisio\RestfulApi\Security\Process;
 
 use Movisio\RestfulApi\Http\IInput;
+use Nette\SmartObject;
 
 /**
  * API authentication base class
  */
 abstract class AuthenticationProcess
 {
+    use SmartObject;
+
     /**
      * Authenticate process
      * @param IInput $input

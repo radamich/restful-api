@@ -13,6 +13,8 @@ use Nette;
  */
 class InputFactory
 {
+    use Nette\SmartObject;
+
     /** @var IRequest */
     protected IRequest $httpRequest;
 

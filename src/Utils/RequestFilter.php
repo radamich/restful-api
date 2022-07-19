@@ -3,8 +3,9 @@ declare(strict_types = 1);
 
 namespace Movisio\RestfulApi\Utils;
 
+use Movisio\RestfulApi\InvalidStateException;
+use Nette\SmartObject;
 use Nette\Utils\Paginator;
-use Drahak\Restful\InvalidStateException;
 use Nette\Http\IRequest;
 use Nette\Utils\Strings;
 
@@ -18,6 +19,8 @@ use Nette\Utils\Strings;
  */
 class RequestFilter
 {
+    use SmartObject;
+
     /** Fields key in URL query */
     protected const FIELDS_KEY = 'fields';
     /** Sort key in URL query */
@@ -150,7 +153,7 @@ class RequestFilter
 
         $paginator = new Paginator();
         $paginator->setItemsPerPage($limit);
-        $paginator->setPage(floor($offset / $limit) + 1);
+        $paginator->setPage(intval(floor($offset / $limit) + 1));
         return $paginator;
     }
 }

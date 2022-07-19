@@ -3,11 +3,15 @@ declare(strict_types = 1);
 
 namespace Movisio\RestfulApi\Application\Converters;
 
+use Nette\SmartObject;
+
 /**
  * Convert snake_case keys to camelCase
  */
 class CamelCaseConverter implements IConverter
 {
+    use SmartObject;
+
     /**
      * @param array $resource
      * @return array

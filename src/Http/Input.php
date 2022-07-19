@@ -5,6 +5,7 @@ namespace Movisio\RestfulApi\Http;
 
 use ArrayIterator;
 use IteratorAggregate;
+use Nette\SmartObject;
 
 /**
  * Request Input parser
@@ -12,6 +13,8 @@ use IteratorAggregate;
  */
 class Input implements IteratorAggregate, IInput
 {
+    use SmartObject;
+
     /** @var array */
     private array $data;
     /**

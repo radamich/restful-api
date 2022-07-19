@@ -3,6 +3,7 @@ declare(strict_types = 1);
 
 namespace Movisio\RestfulApi\Application\Converters;
 
+use Nette\SmartObject;
 use Traversable;
 use DateTime;
 
@@ -11,6 +12,8 @@ use DateTime;
  */
 class DateTimeConverter implements IConverter
 {
+    use SmartObject;
+
     /** DateTime format */
     private string $format = 'c';
 

@@ -12,10 +12,14 @@
     },
     "require-dev": {
         "nette/tester": "^2.4.0",
-        "movisio/nais-cs": "2.*"
+        "movisio/nais-cs": "2.*",
+        "mockery/mockery": "^1.5",
+        "nette/application": "^3.1",
+        "nette/di": "^3.0"
     },
     "require": {
-        "php": "^8.0"
+        "php": "^8.1",
+        "nette/utils": "^3.2"
     },
     "license": "MIT",
     "autoload": {

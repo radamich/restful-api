@@ -5,12 +5,15 @@ namespace Movisio\RestfulApi\Application\Responses;
 
 use Nette\Application\Response;
 use Nette\Http;
+use Nette\SmartObject;
 
 /**
  * Class ErrorResponse
  */
 class ErrorResponse implements Response
 {
+    use SmartObject;
+
     private Response $response;
 
     private int $code;

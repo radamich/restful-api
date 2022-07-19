@@ -1,3 +1,5 @@
 /vendor/
+tests/output/
+tests/restful-api/output/
 composer.lock
 composer.phar
