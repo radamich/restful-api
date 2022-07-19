@@ -28,18 +28,19 @@ namespace {;
         public function testConverter() : void
         {
             $converter = new \Movisio\RestfulApi\Application\Converters\DateTimeConverter();
+            $timezone = new DateTimeZone('+1');
             Assert::type(IConverter::class, $converter);
             Assert::equal([], $converter->convertResource([]));
             Assert::equal([1], $converter->convertResource([1]));
             Assert::equal(['1'], $converter->convertResource(['1']));
-            Assert::equal(['2011-01-03T00:00:00+01:00'], $converter->convertResource([new DateTime('2011-01-03')]));
-            Assert::equal(['2011-01-03T13:22:45+01:00'], $converter->convertResource([new DateTime('2011-01-03 13:22:45')]));
-            Assert::equal(['2011-01-03T13:22:45+01:00'], $converter->convertResource([new \Nette\Utils\DateTime('2011-01-03 13:22:45')]));
-            Assert::equal(['2011-01-03T13:22:45+01:00'], $converter->convertResource([new DateTimeImmutable('2011-01-03 13:22:45')]));
+            Assert::equal(['2011-01-03T00:00:00+01:00'], $converter->convertResource([new DateTime('2011-01-03', $timezone)]));
+            Assert::equal(['2011-01-03T13:22:45+01:00'], $converter->convertResource([new DateTime('2011-01-03 13:22:45', $timezone)]));
+            Assert::equal(['2011-01-03T13:22:45+01:00'], $converter->convertResource([new \Nette\Utils\DateTime('2011-01-03 13:22:45', $timezone)]));
+            Assert::equal(['2011-01-03T13:22:45+01:00'], $converter->convertResource([new DateTimeImmutable('2011-01-03 13:22:45', $timezone)]));
             Assert::equal(['a_1_b' => 'test'], $converter->convertResource(['a_1_b' => 'test']));
             Assert::equal(['phase_abc' => ['b_c' => 'test']], $converter->convertResource(['phase_abc' => ['b_c' => 'test']]));
-            Assert::equal(['phase_abc' => ['b_c' => '2011-01-03T13:22:45+01:00']], $converter->convertResource(['phase_abc' => ['b_c' => new DateTime('2011-01-03 13:22:45')]]));
-            Assert::equal(['phase_abc' => ['b_c' => ['x' => '2011-01-03T13:22:45+01:00']]], $converter->convertResource(['phase_abc' => ['b_c' => new ArrayObject(['x' => new DateTimeImmutable('2011-01-03 13:22:45')])]]));
+            Assert::equal(['phase_abc' => ['b_c' => '2011-01-03T13:22:45+01:00']], $converter->convertResource(['phase_abc' => ['b_c' => new DateTime('2011-01-03 13:22:45', $timezone)]]));
+            Assert::equal(['phase_abc' => ['b_c' => ['x' => '2011-01-03T13:22:45+01:00']]], $converter->convertResource(['phase_abc' => ['b_c' => new ArrayObject(['x' => new DateTimeImmutable('2011-01-03 13:22:45', $timezone)])]]));
 
 
             $converter = new \Movisio\RestfulApi\Application\Converters\DateTimeConverter('H:i');
