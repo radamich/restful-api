@@ -7,9 +7,13 @@ namespace Nette\Application {
 namespace {;
 
     use Movisio\RestfulApi\Application\Converters\ResourceConverter;
+    use Movisio\RestfulApi\Application\Responses\ErrorResponse;
     use Movisio\RestfulApi\Application\UI\ResourcePresenter;
     use Nette\Application\IPresenter;
     use Nette\Application\Request;
+    use Nette\Application\Responses\JsonResponse;
+    use Nette\NotImplementedException;
+    use Nette\Schema\ValidationException;
     use Tester\Assert;
 
     // load Tester library
@@ -18,6 +22,9 @@ namespace {;
 
     // set up PHP behaviour and some Tester properties
     Tester\Environment::setup();
+
+    function throwDebug(\Throwable $e) {
+    }
 
     /**
      * @testCase
@@ -63,7 +70,8 @@ namespace {;
             $mockAuthenticationContext->shouldReceive('authenticate');
 
             $mockIInput = \Mockery::mock(Drahak\Restful\Http\Input::class);
-            $mockIInput->shouldReceive('isValid');
+            $mockIInput->shouldReceive('isValid')->andReturn(true);
+            //$mockIInput->shouldReceive('validate');
 
             $mockInputFactory = \Mockery::mock(Drahak\Restful\Http\InputFactory::class);
             $mockInputFactory->shouldReceive('create')->andReturn($mockIInput);
@@ -81,6 +89,29 @@ namespace {;
             $presenter->injectPrimary($mockContext, $mockPresenterFactory, $mockRouter, $mockHttpRequest, $mockHttpResponse, $mockSession, $mockUser);
             $presenter->injectDrahakRestful($mockAuthenticationContext, $mockInputFactory, $mockRequestFilter, $mockResourceConverter);
             $presenter->run($mockRequest);
+
+            $presenter = new class extends ResourcePresenter {
+                public function validateDefault() : void
+                {
+                    throw new ValidationException('abc');
+                }
+            };
+            $presenter->injectPrimary($mockContext, $mockPresenterFactory, $mockRouter, $mockHttpRequest, $mockHttpResponse, $mockSession, $mockUser);
+            $presenter->injectDrahakRestful($mockAuthenticationContext, $mockInputFactory, $mockRequestFilter, $mockResourceConverter);
+            Assert::type(ErrorResponse::class,$presenter->run($mockRequest));
+
+            $presenter = new class extends ResourcePresenter {
+                public bool $validated = false;
+                public function validateDefault() : void
+                {
+                    $this->validated = true;
+                }
+            };
+            $presenter->injectPrimary($mockContext, $mockPresenterFactory, $mockRouter, $mockHttpRequest, $mockHttpResponse, $mockSession, $mockUser);
+            $presenter->injectDrahakRestful($mockAuthenticationContext, $mockInputFactory, $mockRequestFilter, $mockResourceConverter);
+            Assert::type(JsonResponse::class, $presenter->run($mockRequest));
+            Assert::true($presenter->validated);
+
         }
     }
 

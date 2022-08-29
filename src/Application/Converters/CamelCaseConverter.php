@@ -4,6 +4,7 @@ declare(strict_types = 1);
 namespace Movisio\RestfulApi\Application\Converters;
 
 use Nette\SmartObject;
+use Nette\Utils\Strings;
 
 /**
  * Convert snake_case keys to camelCase
@@ -32,7 +33,7 @@ class CamelCaseConverter implements IConverter
         foreach ($array as $key => $value) {
             $newKey = is_string($key) ? preg_replace_callback('/_([a-z])/', static function ($matches) {
                 return strtoupper($matches[1]);
-            }, $key) : $key;
+            }, Strings::firstLower($key)) : $key;
             $newVal = is_iterable($value)  ? self::arrayKeysRecursiveConvert($value) : $value;
             $res[$newKey] = $newVal;
         }
