@@ -2,10 +2,12 @@
 
 namespace {;
 
+    use Drahak\Restful\Validation\IValidator;
     use Movisio\RestfulApi\BadRequestException;
     use Movisio\RestfulApi\Http\IInput;
     use Movisio\RestfulApi\Http\Input;
     use Nette\Http\IRequest;
+    use Nette\InvalidStateException;
     use Nette\MemberAccessException;
     use Tester\Assert;
     use Symfony\Component\Console\Tester\CommandTester;
@@ -45,6 +47,42 @@ namespace {;
             Assert::false(isset($input->nonexistentkey));
             Assert::type(ArrayIterator::class, $input->getIterator());
             Assert::equal(['key' => 'test'], iterator_to_array($input->getIterator()));
+        }
+
+        public function testValidators() : void
+        {
+            $input = new Input();
+            Assert::same($input, $input->field(''));
+            Assert::exception(function () use($input) {
+                $input->addRule('x');
+            }, InvalidStateException::class);
+            $input->field('xyz');
+            Assert::same($input, $input->addRule('string')->addRule('required'));
+            Assert::false($input->isValid());
+            $input->setData(['xyz' => 'test']);
+            $input->field('inttest');
+            $input->addRule('int');
+            $input->field('anytest');
+            $input->addRule('required');
+            $input->field('email');
+            $input
+                ->addRule('email')
+                ->addRule('min_length', null, 9)
+                ->addRule('max_length', null, 12);
+            Assert::false($input->isValid());
+            $input->setData(['xyz'=> 'a', 'anytest' => 1.0, 'inttest' => 1, 'email' => 'aaaaaa@b.cz']);
+            Assert::equal([], $input->validate());
+            $input->addRule('requiredd');
+            Assert::exception(function () use($input) {
+                $input->isValid();
+            }, InvalidStateException::class);
+
+            $input = new Input();
+            $input->field('abc')->addRule(IValidator::INTEGER)->addRule(IValidator::STRING);
+            Assert::exception(function () use($input) {
+                $input->isValid();
+            }, InvalidStateException::class);
+
         }
     }
 

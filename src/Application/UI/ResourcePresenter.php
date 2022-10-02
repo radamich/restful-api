@@ -4,6 +4,7 @@ declare(strict_types = 1);
 namespace Movisio\RestfulApi\Application\UI;
 
 use Movisio\RestfulApi\Application\Converters\ResourceConverter;
+use Movisio\RestfulApi\Application\Responses\ErrorResponse;
 use Movisio\RestfulApi\Http\IInput;
 use Movisio\RestfulApi\Http\InputFactory;
 use Movisio\RestfulApi\Security\AuthenticationContext;
@@ -94,6 +95,27 @@ class ResourcePresenter extends Presenter
     {
         parent::startup();
         $this->autoCanonicalize = false;
+        $this->getHttpResponse()->setHeader('Access-Control-Allow-Origin', '*');
+
+        $validationMethod = 'validate' . ucfirst($this->action);
+        try {
+            $validationExists = $this->tryCall($validationMethod, []);
+        } catch (\Throwable $exception) {
+            throwDebug($exception);
+            $this->sendResponse(new ErrorResponse(new JsonResponse([
+                'code' => $exception->getCode() ?: 500,
+                'status' => 'error',
+                'message' => 'Server error during request validation setup'
+            ])));
+        }
+
+        if ($validationExists && !$this->getInput()->isValid()) {
+            $this->sendResponse(new ErrorResponse(new JsonResponse([
+                'code' => 422,
+                'status' => 'validation-error',
+                'messages' => $this->getInput()->validate(),
+            ])));
+        }
     }
 
     /**

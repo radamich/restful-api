@@ -39,7 +39,7 @@ namespace {;
             Assert::equal(['_1'], $converter->convertResource(['_1']));
             Assert::equal(['1' => 'test'], $converter->convertResource(['1' => 'test']));
             Assert::equal(['a' => 'test'], $converter->convertResource(['a' => 'test']));
-            Assert::equal(['A' => 'test'], $converter->convertResource(['A' => 'test']));
+            Assert::equal(['a' => 'test'], $converter->convertResource(['A' => 'test']));
             Assert::equal(['_' => 'test'], $converter->convertResource(['_' => 'test']));
             Assert::equal(['A' => 'test'], $converter->convertResource(['_a' => 'test']));
             Assert::equal(['_1' => 'test'], $converter->convertResource(['_1' => 'test']));
@@ -49,6 +49,7 @@ namespace {;
             Assert::equal(['phase_1' => 'test'], $converter->convertResource(['phase_1' => 'test']));
             Assert::equal(['phaseAbc' => 'test'], $converter->convertResource(['phase_abc' => 'test']));
             Assert::equal(['phaseAbc' => ['bC' => 'test']], $converter->convertResource(['phase_abc' => ['b_c' => 'test']]));
+            Assert::equal(['phaseAbc' => ['bC' => 'test']], $converter->convertResource(['Phase_abc' => ['b_c' => 'test']]));
         }
     }
 

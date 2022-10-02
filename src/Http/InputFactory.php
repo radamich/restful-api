@@ -55,10 +55,14 @@ class InputFactory
     protected function parseRequestBody() : array
     {
         $requestBody = [];
-        $input = class_exists('Nette\Framework') && Nette\Framework::VERSION_ID <= 20200 ? // Nette 2.2.0 and/or newer
+        // Nette 2.2.0 and/or newer
+        $input = class_exists(Nette\Framework::class) && Nette\Framework::VERSION_ID <= 20200 ?
             file_get_contents('php://input') :
             $this->httpRequest->getRawBody();
-        $contentType = $this->httpRequest->getHeader('Content-Type');
+        $contentType = $this->httpRequest->getHeader('Content-Type') ?? '';
+        $contentType = explode(';', $contentType);
+        $contentType = \Nette\Utils\Strings::trim($contentType[0]);
+        $contentType = $contentType ? $contentType : 'NULL';
 
         if ($input) {
             try {
