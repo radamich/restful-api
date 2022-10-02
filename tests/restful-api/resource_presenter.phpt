@@ -112,6 +112,26 @@ namespace {;
             Assert::type(JsonResponse::class, $presenter->run($mockRequest));
             Assert::true($presenter->validated);
 
+            $presenter = new class extends ResourcePresenter {
+                public bool $validated = false;
+                public function validateDefault() : void
+                {
+                    $this->validated = true;
+                }
+            };
+            $mockIInput = \Mockery::mock(Drahak\Restful\Http\Input::class);
+            $mockIInput->shouldReceive('isValid')->andReturn(false);
+            $mockIInput->shouldReceive('validate')->andReturn(['testError']);
+            $mockInputFactory = \Mockery::mock(Drahak\Restful\Http\InputFactory::class);
+            $mockInputFactory->shouldReceive('create')->andReturn($mockIInput);
+            
+            $presenter->injectPrimary($mockContext, $mockPresenterFactory, $mockRouter, $mockHttpRequest, $mockHttpResponse, $mockSession, $mockUser);
+            $presenter->injectDrahakRestful($mockAuthenticationContext, $mockInputFactory, $mockRequestFilter, $mockResourceConverter);
+            $response = $presenter->run($mockRequest);
+
+            Assert::type(ErrorResponse::class, $response);
+            Assert::true($presenter->validated);
+
         }
     }
 
